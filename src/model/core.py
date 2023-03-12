@@ -50,33 +50,36 @@ def synthesize_to_speaker(text,lang,key,region):
 
 def respond(conversation,mod,key):
     openai.api_key = key
-    response = openai.Completion.create(
+    response = openai.ChatCompletion.create(
         model=mod,
         #model="text-curie-001",
-        prompt=conversation,
+        messages=conversation,
         temperature=1,
         max_tokens=150,
         top_p=1,
         frequency_penalty=1,
         presence_penalty=0.1,
-        stop=["YOU:", "AI:"]
+        stop=None
     )
-    return response.choices[0].text
+    return response['choices'][0]['message']['content']
 
 def suggestion(conversation,mod,key):
     openai.api_key = key
-    response = openai.Completion.create(
+    response = openai.ChatCompletion.create(
         model=mod,
-        prompt=conversation,
+        messages=conversation,
         temperature=1,
         max_tokens=150,
         top_p=1,
         frequency_penalty=1,
         presence_penalty=0.1,
-        stop=["YOU:", "AI:"]
+        stop=None
     )
-    return response.choices[0].text
+    return response['choices'][0]['message']['content']
 
 def concatenate(original, person="You", paragraph=""):
     return f"{original}\n{person}: {paragraph}\n\nAI:"
 
+def add_message(role, content):
+    message = {"role": role, "content": content}
+    return message

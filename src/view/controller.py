@@ -16,10 +16,10 @@ class Controller:
 
     def _change_mode(self, index):
         if index == 0:
-            self._model.respond_mod = "text-davinci-003"
-            self._model.sugg_mod = "text-davinci-003"
+            self._model.respond_mod = "gpt-3.5-turbo"
+            self._model.sugg_mod = "gpt-3.5-turbo"
         elif index == 1:
-            self._model.respond_mod = "text-davinci-003"
+            self._model.respond_mod = "gpt-3.5-turbo"
             self._model.sugg_mod = "text-curie-001"
         else:
             self._model.respond_mod = "text-curie-001"
@@ -40,7 +40,9 @@ class Controller:
     # Background input
     # @pyqtSlot()
     def _update_background(self):
-        self._model.conversation = self._view.background_input.text()
+        system_role = self._view.background_input.text()
+        message = {"role": "system", "content": system_role}
+        self._model.conversation.append(message)
         self._model.is_background_set = True
 
 
@@ -60,7 +62,7 @@ class Controller:
             self._view.suggestion_window.suggestion_label.setText(sugg.replace('\n', ''))
     
     def _clear_text(self):
-        self._model.conversation=''
+        self._model.conversation=[]
         self._model.is_background_set = False
         self._view.text_edit.clear()
         self._view.background_input.clear()
@@ -85,10 +87,9 @@ class Controller:
         self._view.toolbar.settings_action.triggered.connect(self._change_settings)
 
         # Background input
-        self._view.background_input.textChanged.connect(self._update_background)
+        self._view.background_input.editingFinished.connect(self._update_background)
 
         # Lower Buttons
         self._view.lower_layout.language_box.currentIndexChanged.connect(self._change_language)
         self._view.lower_layout.speak_button.clicked.connect(self._speak)
         self._view.lower_layout.clear_button.clicked.connect(self._clear_text)
-
